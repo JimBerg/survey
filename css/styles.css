@@ -35,7 +35,7 @@ body {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 13px;
 	line-height: 16px;
-	background: url( '../images/wood2.jpg' ) center center repeat;
+	background: url( '../images/wood2.jpg' ) top center repeat;
 }
 
 img {
@@ -132,7 +132,8 @@ input:-moz-placeholder {
 	font-style: italic;
 }
 
-form#login-form .error {
+form#login-form .error,
+form#register-form .error {
 	border: 1px solid #E93E52;
 }
 
@@ -147,7 +148,7 @@ form#login-form .error {
 
 
 /** --------------------------------------------------------- 
-* Login Form
+* Login Form || Register Form
 * ----------------------------------------------------------*/
 #content {
     width: 360px;
@@ -171,7 +172,6 @@ form#login-form .error {
 		0 2px 2px rgba(0, 0, 0, 0.2), 
 		0 1px 5px rgba(0, 0, 0, 0.2), 
 		0 0 0 12px rgba(255, 255, 255, 0.4);
-		
 }
 
 form#login-form {
@@ -196,12 +196,13 @@ form#register-form input {
 	padding: 4px 7px 2px 7px;
 	width: 220px;
 	border-radius: 3px;
-	border: 1px solid #CFCFCF;
+	border: 1px solid #C5C2A1;
 	box-shadow: 
 		1px 1px 0 #FFF,
 		-1px -1px 0 #FFF, 
 		inset 0 0px 8px #D1D1D1, 
-		inset 0 2px 4px #D5D5D5;
+		inset 0 2px 4px #DAD9D7,
+		inset 0 1px 1px #918E81;
 	background: #E9E9E0;
 	line-height: 28px;
 	clear: both;
@@ -254,7 +255,7 @@ p.no-account {
 }
 
 /** --------------------------------------------------------- 
-* Survey Page
+* Survey Page - General Layout 
 * ----------------------------------------------------------*/
 #header {
 	width: 520px;
@@ -320,8 +321,8 @@ ul#main-nav li a:hover {
 	width: 520px;
 	margin: 50px auto 30px;
 	padding: 25px;
-	height: 550px;
 	position: relative;
+	min-height: 320px;
 	
 	background: #fcfff7; /* Old browsers */
 	background: -moz-linear-gradient(top,  #fcfff7 35%, #f8f5ea 98%); /* FF3.6+ */
@@ -345,4 +346,67 @@ span.right.small {
 	padding-right: 0;
 	font-size: 13px;
 	line-height: 0;
+}
+
+/** --------------------------------------------------------- 
+* Survey Form
+* ----------------------------------------------------------*/
+#question-form h3 {
+	text-transform: uppercase;
+	font-family: 'Sintony', sans-serif;
+	font-size: 24px;
+	font-weight: 300;
+	color: #468EAA;
+	text-shadow: 0 1px 0 #fff;
+	width: 100%;
+	float: left;
+	display: block;
+	margin: 30px 0 5px 0;
+}
+
+#question-form label {
+	display: block;
+	font-family: 'Sintony', sans-serif;
+	font-weight: 300;
+	font-size: 14px;
+	padding: 12px 0 6px 0;
+	border-bottom: 1px dotted #CCC;
+	float: left;
+	width: 100%;
+	color: #468EAA;
+	text-shadow: 0 1px 0 #fff;
+	text-transform: none;
+}
+
+#question-form ul {
+	list-style: none;
+	margin: 10px 0 40px 0;
+	padding: 0 0 0 0px;
+	display: block;
+	float: left;
+}
+
+#question-form li {
+	clear: both;
+	float: left;
+	width: 515px;
+	padding: 8px 0 8px 5px;
+}
+
+#question-form li:nth-child(2n) {
+	background: #F5F3EF;
+}
+
+#question-form_ input[type="radio"] {
+	margin-right: 5px;
+	display: inline-block;
+	height: 28px;
+	width: 28px;
+}
+
+#question-form .text {
+	display: block;
+	float: right;
+	width: 95%;
+	line-height: 18px;
 }

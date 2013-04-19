@@ -1,20 +1,38 @@
 <?php
+/**
+ * MODUL 133 | WEBUMFRAGE  
+ * 
+ * 
+ * @author Janina Imberg
+ * @version 1.0
+ * 
+ * ---------------------------------------------------------------- */
 
 class User 
 {
-	public $user;
+	public static $user;
+	
+	/**
+	 * stores various config parameters
+	 * @var array $config 
+	 */
 	private $config = array(
 		'salt' => 'wLo1MbsyVM10df90DZ3d2a54p0703lzS'
 	);
 	
-	
 	/**
-	 * check if $_POST is set,
-	 * delegate to login or logout
-	 * cheating if no post is set ;)
+	 * constructor function - called on init
+	 * check if $_POST is set, then
+	 * delegate to login, register, logout, survey
+	 * @return void
 	 */
 	public function __construct() 
 	{
+		session_start();
+		if( $_SESSION[ 'username' ] ) {
+			self::$user = $this->getCurrentUser();
+		}
+			
 		if( isset( $_POST ) ) {
 			if( isset( $_POST[ 'login' ] ) ) {
 				$user = trim( htmlentities( $_POST[ 'username' ] ) );
@@ -27,25 +45,29 @@ class User
 			} else if( isset( $_POST[ 'register' ] ) ) {
 				$this->register();
 				exit();
+			} else if( isset( $_POST[ 'question' ] ) ) {
+				$save = $this->saveSurvey();
+				echo $save;
+				exit();
 			}
-		} else {
-			//self::redirect( 'index' );
 		}
 	}
 	
 	/**
-	 * login process is called when form data is send
+	 * login process is called when form was submitted
 	 * check if all fields where filled in and input is valid
 	 * - redirect to index.php if not
 	 * - start session and redirect to survey.php if valid
+	 * @param string $user
+	 * @param string $pwd
+	 * @return void
 	 */	
 	private function login( $user, $pwd ) 
 	{
 		if( $this->validateData( $user, $pwd ) ) {
 			session_start();
-			$_SESSION[ 'username' ] = $user;
-			$this->user = $this->getCurrentUser( $_SESSION[ 'username' ] );
-			$_SESSION[ 'data' ] = $this->user;
+			$_SESSION[ 'username' ] = $user; //get username from session
+			self::$user = $this->getCurrentUser();
 			$response[ 'valid' ] = true;
 			echo json_encode( $response );
 		} else {
@@ -62,22 +84,11 @@ class User
 	}
 	
 	/**
-	 * clear session
-	 * logout process
-	 */
-	private function logout() 
-	{
-		$_SESSION = array();
-		if( isset( $_COOKIE[ session_name() ] ) ) {
-		   $cookie_expires  = time() - date('Z') - 3600;
-		   setcookie( session_name(), '', $cookie_expires, '/');
-		}
-		session_destroy();
-		exit();
-	}
-	
-	/**
-	 * check 
+	 * evaluate post data of submitted form
+	 * check if user already exits
+	 * - if not save new user object to file
+	 * - then redirect to app / login function
+	 * @return void
 	 */	
 	private function register() 
 	{
@@ -89,29 +100,58 @@ class User
 		
 		if( $this->notExists( $user ) ) {
 			if( $this->passwordMatch( $pwd, $pwdConfirm ) ) {
-				$this->saveData( $user, $pwd );
+				$this->createUser( $user, $pwd );
 				$registered = true;
+			} else {
+				$response[ 'valid' ] = false;
+				$response[ 'type' ] = 2;
+				$response[ 'msg' ] = "Passwörter stimmen nicht überein.";
+				echo json_encode( $response );
+				exit();
 			}
-		} 
+		} else {
+			$response[ 'valid' ] = false;
+			$response[ 'type' ] = 1;
+			$response[ 'msg' ] = "Benutzer existiert bereits.";
+			echo json_encode( $response );
+			exit();
+		}
 		
 		if( $registered == true ) {
 			$this->login( $user, $pwd );
-		} else {
-			//some error message
-		}
+		} 
 	}
-	
+
 	/**
+	 * logout process
+	 * clear session and cookies
+	 * redirect to index
+	 * @return void
+	 */
+	private function logout() 
+	{
+		$_SESSION = array();
+		if( isset( $_COOKIE[ session_name() ] ) ) {
+		   $cookie_expires  = time() - date('Z') - 3600;
+		   setcookie( session_name(), '', $cookie_expires, '/');
+		}
+		session_destroy();
+		exit();
+	}
+
+	 /**
 	 * checks if user already exists
-	 * @return true | false
+	 * true if not exists
+	 * else false
+	 * @param string $user
+	 * @return boolean
 	 */
 	private function notExists( $user = null ) 
 	{
-		if( $user == null ) {
+		if( $user == null ) { // just to make sure
 			return false;
 		} else {
-			//read data from file
-			$json = file_get_contents( 'saveUser.json' );
+			$json = file_get_contents( 'saveUserV1.json' ); //read data from file
 			$file = json_decode( $json );
 	
 			foreach( $file as $data ) {
@@ -124,27 +164,17 @@ class User
 	}
 	
 	/**
-	 * checks if password matches
-	 * @return true | false
-	 */
-	private function passwordMatch( $pwd, $pwdConfirm ) 
-	{
-		return $pwd == $pwdConfirm ? true : false;
-	}
-	
-	/**
 	 * check if password & user is matching
-	 * @param $user
-	 * @param $pwd
-	 * @return true | false
+	 * @param string $user
+	 * @param string $pwd
+	 * @return boolean
 	 */
 	private function validateData( $user = null, $pwd = null ) 
 	{
 		if( $user == null || $pwd == null ) {
 			return false;
 		} else {
-			//read data from file
-			$json = file_get_contents( 'saveUser.json' );
+			$json = file_get_contents( 'saveUserV1.json' ); //read data from file
 			$file = json_decode( $json );
 	
 			foreach( $file as $data ) {
@@ -159,61 +189,22 @@ class User
 	}
 	
 	/**
-	 * get data of current logged in user
-	 * @param $user from session
-	 * @return $userdata | false
+	 * checks if password matches
+	 * true if match
+	 * else false
+	 * @param string $pwd
+	 * @param string $pwdConfirm
+	 * @return boolean
 	 */
-	private function getCurrentUser( $user ) 
+	private function passwordMatch( $pwd, $pwdConfirm ) 
 	{
-		$json = file_get_contents( 'saveUser.json' );
-		$file = json_decode( $json );
-
-		foreach( $file as $data ) {
-			if( $data->user == $user ) {
-				return $data->survey;
-			}
-		}
-		return false;
-	}
-
-	
-	/**
-	 * save user data to textfile in json format
-	 * @param $user, $pwd
-	 * @return false | true
-	 */
-	private function saveData( $user = null, $pwd = null ) 
-	{
-		if( $user == null || $pwd == null ) {
-			return false;
-		} else {
-			// get saved data
-			$json = file_get_contents( 'saveUser.json' );
-			$file = json_decode( $json );
-			
-			// if user not exist, add new user obj
-			$data = new stdClass();
-			$data->user = $user;
-			$data->pwd = $this->encryptPassword( $pwd );
-			
-			$survey = new stdClass();
-			$survey->hasParticipated = false;
-			$survey->hasParticipated = false;
-			for( $i = 1; $i <= 5; $i++ ) {
-				$survey->{"question_".$i} = null;
-			}
-			$data->survey = $survey; //json_encode( $survey );
-		
-			array_push( $file, $data ); //add user to array
-			file_put_contents( 'saveUser.json', json_encode( $file ) ); //save new data to file
-		
-			//return true;
-		}
+		return $pwd == $pwdConfirm ? true : false;
 	}
 	
 	/**
 	 * encrypt n salt password
-	 * @return encrypted password
+	 * @param string $pwd
+	 * @return string $pwd = encrypted password
 	 */
 	private function encryptPassword( $pwd ) 
 	{
@@ -221,15 +212,109 @@ class User
 	}
 	
 	/**
-	 * checks if current user has already taken the survey
-	 * if true, only show evaluation / user may not take survey twice
-	 * @return true | false
+	 * save user data to textfile in json format
+	 * @param string $user
+	 * @param string $pwd
+	 * @return void
 	 */
-	private function hasParticipated()
+	private function createUser( $user = null, $pwd = null ) 
 	{
-	 	
+		if( $user == null || $pwd == null ) {
+			return false;
+		} else {
+			$json = file_get_contents( 'saveUserV1.json' ); // get saved data
+			$file = json_decode( $json );
+			
+			if( empty( $file ) ) {
+				$file = array();
+			}
+			$data = new stdClass();
+			$data->user = $user;
+			$data->pwd = $this->encryptPassword( $pwd );
+			$data->hasParticipated = false;
+			
+			array_push( $file, $data ); //add user to array
+			file_put_contents( 'saveUserV1.json', json_encode( $file ) ); //save new data to file
+		}
 	}
 	
+	/**
+	 * save results to file
+	 * save answers to surveyAnswers
+	 * set participated to true
+	 * 
+	 */
+	 private function saveSurvey() 
+	 {
+		$json = file_get_contents( 'surveyAnswersV1.json' );
+		$file = json_decode( $json );
+		if( empty( $file ) ) {
+			$file = array();
+		}
+	 	if( isset( $_POST ) ) {		
+	 		$answers = $_POST;
+	 		$data = new stdClass();
+			foreach( $answers as $key => $value ) {
+				$data->{$key} = $value;
+			}  
+			array_push( $file, $data ); 
+			file_put_contents( 'surveyAnswersV1.json', json_encode( $file ) ); 
+			
+			$this->setParticipated();
+			
+			$response[ 'success' ] = true;
+			return json_encode( $response );	
+	 	} else {
+	 		$response[ 'error' ] = "Ein Fehler ist aufgetreten";
+			echo json_encode( $response );
+	 		return;
+	 	}
+	 }
+	 
+	 /**
+	 * 
+	 */
+	 private function setParticipated() 
+	 {
+	 	$json = file_get_contents( 'saveUserV1.json' );
+		$file = json_decode( $json );
+
+		foreach( $file as $key => $value ) {
+			if( $value->user == $_SESSION['username'] ) {
+				$pwd = $value->pwd;
+				$user = $value->user;
+				$file[ $key ] = '';
+				$item = new stdClass();
+				$item->user = $user;
+				$item->pwd = $pwd;
+				$item->hasParticipated = true;
+				array_push( $file, $item );
+				file_put_contents( 'saveUserV1.json', json_encode( $file ) ); 
+				return;
+			}
+		}
+	 }
+	
+	/**
+	 * get data of current logged in user
+	 * @param string $user
+	 * @return object $user | false
+	 */
+	private function getCurrentUser() 
+	{
+		$json = file_get_contents( 'saveUserV1.json' );
+		$file = json_decode( $json );
+
+		foreach( $file as $item ) {
+			if( $item->user == $_SESSION['username'] ) {
+				$user = new stdClass();
+				$user->hasParticipated = $item->hasParticipated;
+				$user->username = $item->username;
+				return $user;
+			}
+		}
+		return false;
+	}
 	
 	/**
 	 * redirect helper function
@@ -239,7 +324,7 @@ class User
 	private static function redirect( $page ) 
 	{
 		return header( "Location: $page.php" );
-	}
+	}	
 }
 
 new User();

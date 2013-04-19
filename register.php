@@ -1,5 +1,5 @@
 <form id="register-form" method="post" action="#">
-	<h1>Webumfrage: Register</h1>
+	<h1>Registrierung</h1>
 	<p class="no-account"><a href="#" id="to-login">Zum Login!</a></p>
 	<span class="form">
 		<label for="username">Benutzername: </label>

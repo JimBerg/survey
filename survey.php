@@ -1,4 +1,4 @@
-<?php session_start(); ?> 
+<?php include_once 'user.php'; ?>
 <!DOCTYPE html>
 <html> 
     <head>
@@ -13,10 +13,9 @@
     </head>
     
     <body>
-    	<?php if( isset( $_SESSION['username'] ) ): ?> 
-    	<?php $user = $_SESSION['data']; ?>
+    	<?php if( isset( $_SESSION['username'] ) ): ?>
 		<div id="header">
-			<h1>Umfrage</h1>
+			<h1>Fragekatalog: Altersheim</h1>
 			<span class="right small">Willkommen, <?php echo $_SESSION['username']; ?></span>
 			<ul id="main-nav">
 				<li><a href="#" id="survey" class="active">Umfrage</a></li>
@@ -25,13 +24,7 @@
 			</ul>
 		</div>
 	    <div id="container">
-	    	<?php 
-	    		if( $user->hasParticipated == false ) {
-	    			include_once 'questions.php';
-				} else {
-					echo "Du hast schon teilgenommen.";
-				}
-			?>
+	    	<?php include_once 'questions.php'; ?>
 	    </div>
 		<?php else: ?>
 			<?php header( "Location: index.php" ); ?>

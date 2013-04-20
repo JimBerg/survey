@@ -1,32 +1,47 @@
 <?php 
 class Results {
+
+	public static $total;
 	
 	public function __construct()
 	{
 	}
 	
+	public static function readFile() 
+	{
+		if( file_exists('surveyAnswersV1.json' ) ) {
+			$json = file_get_contents( 'surveyAnswersV1.json' ); 
+			$file = json_decode( $json );
+		} else {
+			$file = array( 'error' => 'Datei nicht vorhanden' );
+		}
+		return $file;
+	}
+	
+	public static function setNumberOfParticipants() 
+	{
+		$file = self::readFile();
+		self::$total = sizeof( $file );// count elements => how many people participated
+	}
+	
 	public static function getResults() 
 	{
-		$json = file_get_contents( 'surveyAnswersV1.json' ); 
-		$file = json_decode( $json );
-		
-		$elems = sizeof( $file ); // count elements => how many people participated
-		$results = array();
-		
-		for( $i = 0; $i < $elems; $i++ ) { // loop over all records and split into questions
-			foreach( $file[$i] as $key => $value ) {
-				if( $key != 'question' ) { // TODO: dont save it to json
-					$question[$key][] = $value; // save each question bundled with its results
+		$file = self::readFile();
+		if( !isset( $file['error'] ) ) {
+			$elems = self::$total; 
+			$results = array();
+			
+			for( $i = 0; $i < $elems; $i++ ) { // loop over all records and split into questions
+				foreach( $file[$i] as $key => $value ) {
+					if( $key != 'question' ) { // TODO: dont save it to json
+						$question[$key][] = $value; // save each question bundled with its results
+					}
 				}
 			}
+			return $question;
+		} else {
+			return array( 'error' => 'Ein Fehler ist aufgetreten' );
 		}
-		return $question;
-		
-		$results = array();
-		foreach( $question as $key => $value ) {
-			$results[] = array( $key => array_count_values ( $question[$key] ) );		
-		}
-		return $test = $results;
 	}
 	
 	public static function getSingleData( $key ) 
@@ -78,5 +93,24 @@ class Results {
 			'4' => '#F38630'
 		);
 		return $colors[ $key ];
+	}
+
+	
+	public static function getAnswers( $key ) 
+	{
+		$answers = array(
+			0 => 'Miserabel',
+			1 => 'Eher schlecht',
+			2 => 'Ganz in Ordnung',
+			3 => 'Brilliant'
+		);
+		return $answers[ $key ];
+	} 
+
+	public static function getPercent( $count ) 
+	{
+		$total = self::$total;
+		$percent = round( ( $count / $total ), 2 ) * 10;
+		return $percent;
 	}
 }

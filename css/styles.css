@@ -322,7 +322,7 @@ ul#main-nav li a:hover {
 	margin: 50px auto 30px;
 	padding: 25px;
 	position: relative;
-	min-height: 320px;
+	/*min-height: 320px;*/
 	
 	background: #fcfff7; /* Old browsers */
 	background: -moz-linear-gradient(top,  #fcfff7 35%, #f8f5ea 98%); /* FF3.6+ */
@@ -397,6 +397,10 @@ span.right.small {
 	background: #F5F3EF;
 }
 
+#question-form li.error {
+	color: #E93E52;
+}
+
 #question-form_ input[type="radio"] {
 	margin-right: 5px;
 	display: inline-block;
@@ -409,6 +413,14 @@ span.right.small {
 	float: right;
 	width: 95%;
 	line-height: 18px;
+}
+
+.participated-notice {
+	height: 80px;
+	width: 480px;
+	line-height: 30px;
+	padding: 20px;
+	background: #F5F3EF;
 }
 
 
@@ -467,6 +479,10 @@ span.right.small {
 	display: inline-block;
 	margin: 1px 0 0 10px;
 	vertical-align: top;
+}
+
+.percent-text.not-set {
+	text-decoration: line-through;
 }
 
 

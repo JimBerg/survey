@@ -197,10 +197,10 @@
 			type: 'POST',
 		  	url: 'user.php',
 		  	data: data,
-		  	async: 'false',
+		  	async: 'true',
 		  	success: function( response ) {
 		  		if ( response.success == true ) {
-		  			$( '#container' ).html('<h2>Vielen Dank für deine Teilnahme!</h2>');
+		  			$( '#container' ).html('<div class="participated-notice"><h2>Vielen Dank für deine Teilnahme!<br /></h2></div>');
 	  				return;
 		  		}
 		 	},
@@ -212,14 +212,25 @@
 	 * delegate question form to js
 	 */
 	$( '#question-form' ).on( 'submit', function( event ) {
+		var valid = true;	
+		if( $( this ).find( '.error' ).length ){
+			$( 'li.error' ).remove();
+		}
 		
-		  		
-		  		//{"msg":{"cat2_question1":"1","cat2_question3":"3","cat3_question1":"2","question":"question"}} 
-		  		//var test = $( '#question-form' ).find( 'input[type="radio"]:checked' ).css( { 'background': 'red'} );
-		  		//console.log(test);
-		//if( valid == true ) {
-			submitSurveyForm( $( this ) );
-		//}
+		$( ':radio' ).each( function() { // iterate over each radio button
+	        var group = $( this ).attr( 'name' ); 
+	        var parent = $( ':radio[name="'+group+'"]' ).closest( 'ul' );
+	        if ( !$( ':radio[name="'+group+'"]:checked' ).length ) { //check if one of this group is set
+		        valid = false;
+		        if( !$( parent ).find( '.error' ).length ) {
+		        	$( '<li class="error">Bitte auswählen.</li>' ).appendTo( $( parent ) );
+		        }
+	        }
+	    });
+	    
+		if( valid == true ) {
+			submitSurveyForm( $( '#question-form' ) );
+		}
 		event.preventDefault();	
 		return false;
 	});

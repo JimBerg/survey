@@ -2,11 +2,10 @@
 <?php include_once 'helper.php'; ?>
 <?php if( User::$user->hasParticipated == true ): ?>
 	<div class="participated-notice">
-		<h2>Du hast an dieser Umfrage schon teilgenommen.</h2>	
-		<p>Schau dir doch die Ergebnisse an.</p>	
+		<h2>Danke für dein Interesse. <br /> Aber du hast an dieser Umfrage schon teilgenommen.</h2>	
 	</div>
 <?php else: ?>			
-	<form id="question-form" method="post" action="#">
+	<form id="question-form">
 		<h3>1. Essen</h3>
 		<span class="form">
 			<label for="cat1_question1">1.1 War das Essen für Sie vielseitig?</label>

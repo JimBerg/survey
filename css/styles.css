@@ -410,3 +410,73 @@ span.right.small {
 	width: 95%;
 	line-height: 18px;
 }
+
+
+/** --------------------------------------------------------- 
+* Evaluation
+* ----------------------------------------------------------*/
+.result-charts {
+	width: 520px;
+	height: 180px;
+	clear: both;
+	display: block;
+	padding: 10px 0 20px 0;
+}
+
+.result-charts h3 {
+	display: block;
+	width: 520px;	
+	border-bottom: 1px dotted #CCC;
+	padding: 10px 0;
+}
+
+.result-charts-graph {
+	width: 200px;
+	height: 180px;
+	float: left;
+	display: block;
+	padding: 0 20px;
+}
+
+
+.result-charts-text {
+	width: 260px;
+	display: block;
+	float: left;
+	height: 180px;
+}
+
+.result-charts-text ul {
+	list-style: none;
+	margin: 15px 0 0 0;
+	padding: 0;
+}
+
+.result-charts-text li {
+	line-height: 16px;
+	padding: 4px 0;
+}
+
+.color-icon {
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+}
+
+.percent-text {
+	display: inline-block;
+	margin: 1px 0 0 10px;
+	vertical-align: top;
+}
+
+
+
+
+
+
+
+
+
+
+
+

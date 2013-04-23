@@ -2,6 +2,8 @@
 /**
  * MODUL 133 | WEBUMFRAGE  
  * 
+ * class User
+ * User and Sessionmanagement
  * 
  * @author Janina Imberg
  * @version 1.0
@@ -242,7 +244,7 @@ class User
 	 * save results to file
 	 * save answers to surveyAnswers
 	 * set participated to true
-	 * 
+	 * @return $response / success or error message
 	 */
 	 private function saveSurvey() 
 	 {
@@ -272,7 +274,12 @@ class User
 	 }
 	 
 	 /**
-	 * 
+	 * get current user and set participated to true
+	 * loop over user file
+	 * find matching entry - copy username and pwd
+	 * empty user entry and set a new one with participated true
+	 * (somewhat inconvenient) 
+	  * @return void
 	 */
 	 private function setParticipated() 
 	 {
